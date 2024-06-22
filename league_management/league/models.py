@@ -1,6 +1,8 @@
+import np
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import timedelta
+import numpy as np
 
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -22,6 +24,17 @@ class Team(models.Model):
             total_score = sum(player.average_score for player in players)
             return total_score / players.count()
         return 0
+
+    def top_players(self):
+        players = self.players.all()
+
+        # Calculate the 90th percentile score
+        scores = players.values_list('average_score', flat=True)
+        percentile_90 = np.percentile(scores, 90)
+
+        # Filter players whose average score is in the 90th percentile
+        top_players = players.filter(average_score__gte=percentile_90)
+        return top_players
 
     def __str__(self):
         return self.name

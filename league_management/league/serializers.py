@@ -15,6 +15,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, required=False)
     average_score = serializers.SerializerMethodField()
+    top_players = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
@@ -22,6 +23,9 @@ class TeamSerializer(serializers.ModelSerializer):
 
     def get_average_score(self, obj):
         return obj.average_score()
+
+    def get_top_players(self, obj):
+        return obj.top_players()
 
     def update(self, instance, validated_data):
         players_data = validated_data.pop('players', [])
