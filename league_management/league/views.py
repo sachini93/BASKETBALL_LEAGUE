@@ -16,7 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -27,7 +27,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -38,12 +38,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    permission_classes = [AllowAny]
-
-    def list(self, request):
-        games = Game.objects.all()
-        serializer = self.get_serializer(games, many=True)
-        return Response(serializer.data)
+    permission_classes = [permissions.IsAuthenticated]
 
     @api_view(['GET'])
     def scoreboard(request):

@@ -16,6 +16,13 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     coach = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='team')
 
+    def average_score(self):
+        players = self.players.all()
+        if players:
+            total_score = sum(player.average_score for player in players)
+            return total_score / players.count()
+        return 0
+
     def __str__(self):
         return self.name
 
