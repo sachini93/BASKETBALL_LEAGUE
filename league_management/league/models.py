@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from datetime import timedelta
 
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -9,7 +10,7 @@ class CustomUser(AbstractUser):
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
     login_count = models.IntegerField(default=0)
-    total_time_spent = models.DurationField(default=0)
+    total_time_spent = models.DurationField(default=timedelta())
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
@@ -27,7 +28,11 @@ class Game(models.Model):
     team2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2_games')
     team1_score = models.IntegerField()
     team2_score = models.IntegerField()
+    # winner = models.ForeignKey(Team, related_name='won_games', on_delete=models.CASCADE)
     date = models.DateField()
+
+    def __str__(self):
+        return f"{self.team1} vs {self.team2} - {self.team1_score}:{self.team2_score}"
 
     def winner(self):
         if self.team1_score > self.team2_score:
