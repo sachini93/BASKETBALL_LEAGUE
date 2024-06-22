@@ -16,6 +16,9 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     coach = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='team')
 
+    def __str__(self):
+        return self.name
+
 class Player(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
@@ -23,12 +26,14 @@ class Player(models.Model):
     average_score = models.FloatField(default=0)
     games_played = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.user.name
+
 class Game(models.Model):
     team1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team1_games')
     team2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2_games')
     team1_score = models.IntegerField()
     team2_score = models.IntegerField()
-    # winner = models.ForeignKey(Team, related_name='won_games', on_delete=models.CASCADE)
     date = models.DateField()
 
     def __str__(self):

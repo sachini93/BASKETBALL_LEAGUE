@@ -1,4 +1,7 @@
 from rest_framework import viewsets, permissions
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
@@ -41,3 +44,35 @@ class GameViewSet(viewsets.ModelViewSet):
         games = Game.objects.all()
         serializer = self.get_serializer(games, many=True)
         return Response(serializer.data)
+
+    @api_view(['GET'])
+    def scoreboard(request):
+        games = Game.objects.all().order_by('date_played')
+        serializer = GameSerializer(games, many=True)
+        return Response(serializer.data)
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+
+        # Fetch team details if necessary
+        try:
+            team = Team.objects.get(coach=user)
+            team_serializer = TeamSerializer(team)
+        except Team.DoesNotExist:
+            team_serializer = None
+
+        games = Game.objects.all().order_by('date')
+        game_serializer = GameSerializer(games, many=True)
+
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'scoreboard': game_serializer.data,
+            'team': team_serializer.data if team_serializer else None
+        })
