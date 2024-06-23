@@ -25,19 +25,19 @@ class Team(models.Model):
             return total_score / players.count()
         return 0
 
-    # def top_players(self):
-    #     players = self.players.all()
-    #
-    #     # check if there are players in the team
-    #     if not players.exists():
-    #         return []
-    #
-    #     # Calculate the 90th percentile score
-    #     scores = np.array([player.score for player in players])
-    #     percentile_90 = np.percentile(scores, 90)
-    #     top_players = players.filter(score__gte=percentile_90)
-    #
-    #     return [{'user_id': player.user.id, 'user_name': player.user.username} for player in top_players]
+    def top_players(self):
+        players = self.players.all()
+
+        # check if there are players in the team
+        if not players.exists():
+            return []
+
+        # Calculate the 90th percentile score
+        scores = np.array([player.average_score for player in players])
+        percentile_90 = np.percentile(scores, 90)
+        top_players = players.filter(average_score__gte=percentile_90)
+
+        return [player.user.id for player in top_players]
 
     def __str__(self):
         return self.name
