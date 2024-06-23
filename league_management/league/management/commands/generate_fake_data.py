@@ -14,7 +14,7 @@ class Command(BaseCommand):
         coaches = []
         for _ in range(10):
             username = fake.user_name()
-            user = CustomUser.objects.create_user(username, f'{username}@example.com', 'password')
+            user = CustomUser.objects.create_user(username=username, email=f'{username}@example.com', password='password', user_type='coach')
             coaches.append(user)
             self.stdout.write(self.style.SUCCESS(f'Coach {username} created'))
 
@@ -30,7 +30,7 @@ class Command(BaseCommand):
         for team in teams:
             for _ in range(3):
                 username = fake.user_name()
-                user = CustomUser.objects.create_user(username, f'{username}@example.com', 'password')
+                user = CustomUser.objects.create_user(username=username, email=f'{username}@example.com', password='password', user_type='player')
                 Player.objects.create(user=user, team=team, height=random.randrange(150, 200), average_score=random.uniform(0, 100), games_played=random.randrange(0, 50))
                 self.stdout.write(self.style.SUCCESS(f'Player {username} created for team {team.name}'))
 

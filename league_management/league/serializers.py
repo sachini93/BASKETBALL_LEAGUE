@@ -5,8 +5,27 @@ from .models import CustomUser, Team, Player, Game
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'user_type', 'login_count', 'total_time_spent']
+        fields = ['id', 'username', 'password', 'email', 'user_type', 'login_count', 'total_time_spent']
+        extra_kwargs = {'password': {'write_only': True}}
 
+    def create(self, validated_data):
+        user = CustomUser(
+            username=validated_data['username'],
+            email=validated_data['email']
+        )
+        # Hash the password
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+    def update(self, instance, validated_data):
+        # Password is selected only if the value is updating
+        password = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if password:
+            instance.set_password(password)
+            instance.save()
+        return instance
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
