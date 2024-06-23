@@ -10,11 +10,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         fake = Faker()
 
-        # # Create Admin User
-        # admin_name_postfix = random.randint(1, 10)
-        # admin_user = CustomUser.objects.create_superuser(f'admin_{admin_name_postfix}', f'admin{admin_name_postfix}@example.com', 'password')
-        # self.stdout.write(self.style.SUCCESS('Admin user created'))
-
         # Create Coaches
         coaches = []
         for _ in range(10):
