@@ -33,6 +33,18 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'team', 'height', 'average_score', 'games_played']
         read_only_fields = ['id']
 
+    def update(self, instance, validated_data):
+        # Exclude 'user' field from if 'user' is given
+        if 'user' in validated_data:
+            validated_data.pop('user')
+
+        instance.team = validated_data.get('team', instance.team)
+        instance.height = validated_data.get('height', instance.height)
+        instance.average_score = validated_data.get('average_score', instance.average_score)
+        instance.games_played = validated_data.get('games_played', instance.games_played)
+        instance.save()
+        return instance
+
 
 class TeamSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, required=False)
