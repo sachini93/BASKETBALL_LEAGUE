@@ -9,7 +9,7 @@ This is a management system designed for a Basketball tournament, that will help
 - Coach
   
 **Features:**
-- Users management: Manage user roles, User login, Role-based access management, Track user logins, time spent on the site, and current online status, Create/Update/Get/Delete user data.
+- User management: Manage user roles, User login, Role-based access management, Track user logins, time spent on the site, and current online status, Create/Update/Get/Delete user data.
 - Team management: Create/Update/Get/Delete teams, Assign Teams with Players, and coaches, View team statistics (ex: team average score, Players within the team who are inside the 90th average score     
   percentile)
 - Tournament management: Create/Update/Get/Delete Games between teams, Record and display game scores and winning teams, scoreboard
@@ -32,9 +32,7 @@ Follow these steps to set up the project on your local machine.
 - source env/bin/activate  (# On Windows use env\Scripts\activate)
 
 ### Install Dependencies
-- pip install djangorestframework
-- pip install djangorestframework[authtoken]
-- pip install Faker
+- pip install -r requirements.txt
   
 ### Apply migrations
 - python manage.py makemigrations
@@ -79,7 +77,7 @@ Follow these steps to set up the project on your local machine.
 ## Testing
 ### Integration Testing
 - To run the integration test suite, execute the following command
- - python manage.py test
+ - python manage.py run_postman_tests
 
     
 
