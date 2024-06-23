@@ -1,4 +1,3 @@
-import np
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import timedelta
@@ -28,6 +27,10 @@ class Team(models.Model):
     def top_players(self):
         players = self.players.all()
 
+        # Ensure there are players in the team
+        if not players.exists():
+            return Player.objects.none()
+
         # Calculate the 90th percentile score
         scores = players.values_list('average_score', flat=True)
         percentile_90 = np.percentile(scores, 90)
@@ -56,10 +59,10 @@ class Game(models.Model):
     team2_score = models.IntegerField()
     date = models.DateField()
 
-    def __str__(self):
-        return f"{self.team1} vs {self.team2} - {self.team1_score}:{self.team2_score}"
-
     def winner(self):
         if self.team1_score > self.team2_score:
             return self.team1
         return self.team2
+
+    def __str__(self):
+        return f"{self.team1} vs {self.team2} - {self.team1_score}:{self.team2_score}"

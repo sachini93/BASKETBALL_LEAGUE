@@ -42,7 +42,7 @@ class GameViewSet(viewsets.ModelViewSet):
 
     @api_view(['GET'])
     def scoreboard(request):
-        games = Game.objects.all().order_by('date_played')
+        games = Game.objects.all().order_by('date')
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
 
@@ -54,12 +54,6 @@ class CustomAuthToken(ObtainAuthToken):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
 
-        # Fetch team details if necessary
-        try:
-            team = Team.objects.get(coach=user)
-            team_serializer = TeamSerializer(team)
-        except Team.DoesNotExist:
-            team_serializer = None
 
         games = Game.objects.all().order_by('date')
         game_serializer = GameSerializer(games, many=True)
@@ -68,6 +62,5 @@ class CustomAuthToken(ObtainAuthToken):
             'token': token.key,
             'user_id': user.pk,
             'email': user.email,
-            'scoreboard': game_serializer.data,
-            'team': team_serializer.data if team_serializer else None
+            'scoreboard': game_serializer.data
         })
