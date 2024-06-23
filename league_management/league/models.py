@@ -18,26 +18,26 @@ class Team(models.Model):
     coach = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='team')
 
     def average_score(self):
+        # Related name for players in the team
         players = self.players.all()
         if players:
             total_score = sum(player.average_score for player in players)
             return total_score / players.count()
         return 0
 
-    def top_players(self):
-        players = self.players.all()
-
-        # Ensure there are players in the team
-        if not players.exists():
-            return Player.objects.none()
-
-        # Calculate the 90th percentile score
-        scores = players.values_list('average_score', flat=True)
-        percentile_90 = np.percentile(scores, 90)
-
-        # Filter players whose average score is in the 90th percentile
-        top_players = players.filter(average_score__gte=percentile_90)
-        return top_players
+    # def top_players(self):
+    #     players = self.players.all()
+    #
+    #     # check if there are players in the team
+    #     if not players.exists():
+    #         return []
+    #
+    #     # Calculate the 90th percentile score
+    #     scores = np.array([player.score for player in players])
+    #     percentile_90 = np.percentile(scores, 90)
+    #     top_players = players.filter(score__gte=percentile_90)
+    #
+    #     return [{'user_id': player.user.id, 'user_name': player.user.username} for player in top_players]
 
     def __str__(self):
         return self.name
@@ -59,10 +59,10 @@ class Game(models.Model):
     team2_score = models.IntegerField()
     date = models.DateField()
 
-    def winner(self):
+    def get_winner(self):
         if self.team1_score > self.team2_score:
-            return self.team1
-        return self.team2
+            return self.team1.name
+        return self.team2.name
 
     def __str__(self):
         return f"{self.team1} vs {self.team2} - {self.team1_score}:{self.team2_score}"
