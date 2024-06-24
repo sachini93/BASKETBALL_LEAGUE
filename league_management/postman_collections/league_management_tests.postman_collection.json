@@ -9,7 +9,25 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Login as",
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.test(\"User successfully log in\", response.status == 200);",
+									"",
+									"pm.test(\"User token is generated\", response.token != null);",
+									"pm.test(\"User id is retreived\", response.id != null && response.id == 1);",
+									"pm.test(\"User email is retreived\", response.email != null);",
+									"pm.test(\"Scoreboard data are retreived\", response.scoreboard != null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -46,6 +64,18 @@
 				},
 				{
 					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -96,7 +126,42 @@
 					"response": []
 				},
 				{
-					"name": "Add User",
+					"name": "Add User - Coach",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"coachId1\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"coach_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"coach\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `coach_${randomInt}`;",
+									"const password = `coach_password${randomInt}`;",
+									"pm.environment.set(\"coach_username\", username);",
+									"pm.environment.set(\"coach_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -117,7 +182,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": " {\n        \"username\": \"Player_002\",\n        \"email\": \"player002@gmail.com\",\n        \"user_type\": \"player\",\n        \"login_count\": 0,\n        \"total_time_spent\": \"00:00:00\"\n    }",
+							"raw": "{\n    \"username\": \"{{coach_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"coach\",\n    \"password\": \"{{coach_password}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -142,6 +207,482 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get User - Coach",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/{{coachId}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"{{coachId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User - Coach",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.test(\"User updated successfully\", response.status == 200);",
+									"",
+									"pm.test(\"User id updated\", response.id != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10);",
+									"const email = `coach_${randomInt}`+\"@example.com\";",
+									"pm.environment.set(\"coach_email\", email);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{coach_email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/{{coachId}}/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"{{coachId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Coach",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.test(\"User successfully log in\", response.status == 200);",
+									"",
+									"pm.test(\"User token is generated\", response.token != null);",
+									"pm.test(\"User id is retreived\", response.id != null && response.id == pm.environment.get(\"coachId\"));",
+									"pm.test(\"User email is retreived\", response.email != null);",
+									"pm.test(\"Scoreboard data are retreived\", response.scoreboard != null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{coach_username}}\",\n    \"password\": \"{{coach_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/api-token-auth/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"api-token-auth",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"playerId\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"player_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"player\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `player_${randomInt}`;",
+									"const password = `player_password${randomInt}`;",
+									"pm.environment.set(\"player_username\", username);",
+									"pm.environment.set(\"player_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{player_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"player\",\n    \"password\": \"{{player_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/{{playerId}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"{{playerId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.test(\"User updated successfully\", response.status == 200);",
+									"",
+									"pm.test(\"User id updated\", response.id != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10);",
+									"const email = `player_${randomInt}`+\"@example.com\";",
+									"pm.environment.set(\"player_email\", email);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{coach_email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/{{playerId}}/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"{{playerId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Player",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.test(\"User successfully log in\", response.status == 200);",
+									"",
+									"pm.test(\"User token is generated\", response.token != null);",
+									"pm.test(\"User id is retreived\", response.id != null && response.id == pm.environment.get(\"playerId\"));",
+									"pm.test(\"User email is retreived\", response.email != null);",
+									"pm.test(\"Scoreboard data are retreived\", response.scoreboard != null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{player_username}}\",\n    \"password\": \"{{player_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/api-token-auth/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"api-token-auth",
+								""
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -150,6 +691,18 @@
 			"item": [
 				{
 					"name": "Get All Teams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -201,6 +754,36 @@
 				},
 				{
 					"name": "Add Team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const teamName = `Team_${randomInt}`;",
+									"pm.environment.set(\"team_name\", teamName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"teamId\", response.id)",
+									"",
+									"pm.test(\"Team created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"Team id created\", response.id != null);",
+									"pm.test(\"Team name created\", response.name != null && response.name == pm.environment.get(\"team_name\"));",
+									"pm.test(\"Team has assigned to a coach\", response.coach != null && response.coach == pm.environment.get(\"coachId\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -221,7 +804,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Team_03\",\n    \"coach\": 4,\n    \"players\": [\n        {\n            \"user\": 5,\n            \"height\": 190.5,\n            \"average_score\": 20.0,\n            \"games_played\": 5\n        }\n    ]\n}",
+							"raw": "{\n    \"name\": \"{{team_name}}\",\n    \"coach\": {{coachId}}\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -242,6 +825,69 @@
 								"api",
 								"teams",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/teams/{{teamId}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"teams",
+								"{{teamId}}"
 							]
 						}
 					},
@@ -269,7 +915,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"players\": [\n        {\n            \"user\": 5,\n            \"height\": 190.5,\n            \"average_score\": 20.0,\n            \"games_played\": 5\n        }\n    ]\n}",
+							"raw": "{\n    \"players\": [\n        {\n            \"user\": {{playerId}},\n            \"height\": 191.0,\n            \"average_score\": 57.00,\n            \"games_played\": 10\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -277,7 +923,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/teams/3/",
+							"raw": "http://127.0.0.1:8000/api/teams/{{teamId}}/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -289,7 +935,7 @@
 							"path": [
 								"api",
 								"teams",
-								"3",
+								"{{teamId}}",
 								""
 							]
 						}
@@ -303,6 +949,18 @@
 			"item": [
 				{
 					"name": "Get All Players",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -353,7 +1011,42 @@
 					"response": []
 				},
 				{
-					"name": "Add Players",
+					"name": "Add User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"playerId\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"player_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"player\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `player_${randomInt}`;",
+									"const password = `player_password${randomInt}`;",
+									"pm.environment.set(\"player_username\", username);",
+									"pm.environment.set(\"player_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -374,7 +1067,78 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \n        \"user\": 4,\n        \"team\": 2,\n        \"height\": 190.5,\n        \"average_score\": 20.0,\n        \"games_played\": 5\n    }",
+							"raw": "{\n    \"username\": \"{{player_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"player\",\n    \"password\": \"{{player_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Players",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"player_Id\", response.id)",
+									"",
+									"pm.test(\"Player created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"Player id is created\", response.id != null);",
+									"pm.test(\"Player is assigned with correct player type user\", response.user != null &&  response.user ==  pm.environment.get(\"playerId\"));",
+									"pm.test(\"Player is assigned to the correct Team\", response.team != null &&  response.team ==  pm.environment.get(\"teamId\"));",
+									"pm.test(\"Player height is popuated\", response.height != null);",
+									"pm.test(\"Player average_score is popuated\", response.average_score != null);",
+									"pm.test(\"Player games_played is popuated\", response.games_played != null);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {{playerId}},\n    \"team\": {{teamId}},\n    \"height\": 168.0,\n    \"average_score\": 80.00,\n    \"games_played\": 10\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -402,12 +1166,36 @@
 				},
 				{
 					"name": "Get Player by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"pm.test(\"User data retrieved successfully\", response.status == 200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
@@ -421,7 +1209,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/players",
+							"raw": "http://127.0.0.1:8000/api/players/{{player_Id}}/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -431,7 +1219,10 @@
 							],
 							"port": "8000",
 							"path": [
-								"players"
+								"api",
+								"players",
+								"{{player_Id}}",
+								""
 							]
 						}
 					},
@@ -439,15 +1230,59 @@
 				},
 				{
 					"name": "Update Player",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"height\", 170);",
+									"pm.environment.set(\"average_score\", 60);",
+									"pm.environment.set(\"games_played\", 12);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Player updated successfully\", response.status == 200);",
+									"",
+									"",
+									"pm.test(\"Player removed from the correct Team and value set to null\", response.team == null);",
+									"pm.test(\"Player height is updated\", response.height != null);",
+									"pm.test(\"Player average_score is updated\", response.average_score != null);",
+									"pm.test(\"Player games_played is updated\", response.games_played != null);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
 						},
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"playerName\": \"B\",\n    \"height\": 400.0\n}",
+							"raw": "{\n    \"team\": null,\n    \"height\": {{height}},\n    \"average_score\": {{average_score}},\n    \"games_played\": {{games_played}}\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -455,7 +1290,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/players/2",
+							"raw": "http://127.0.0.1:8000/api/players/{{player_Id}}/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -465,8 +1300,10 @@
 							],
 							"port": "8000",
 							"path": [
+								"api",
 								"players",
-								"2"
+								"{{player_Id}}",
+								""
 							]
 						}
 					},
@@ -476,7 +1313,19 @@
 					"name": "Delete Player",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
 						},
 						"method": "DELETE",
 						"header": [],
@@ -490,7 +1339,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/players/2",
+							"raw": "http://127.0.0.1:8000/api/players/{{player_Id}}",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -500,8 +1349,9 @@
 							],
 							"port": "8000",
 							"path": [
+								"api",
 								"players",
-								"2"
+								"{{player_Id}}"
 							]
 						}
 					},
@@ -538,6 +1388,655 @@
 						"body": {
 							"mode": "raw",
 							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/games/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"games",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User - Coach for Team1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"coachId\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"coach_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"coach\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `coach_${randomInt}`;",
+									"const password = `coach_password${randomInt}`;",
+									"pm.environment.set(\"coach_username\", username);",
+									"pm.environment.set(\"coach_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{coach_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"coach\",\n    \"password\": \"{{coach_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Team1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const teamName = `Team_${randomInt}`;",
+									"pm.environment.set(\"team_name\", teamName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"teamId1\", response.id)",
+									"",
+									"pm.test(\"Team created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"Team id created\", response.id != null);",
+									"pm.test(\"Team name created\", response.name != null && response.name == pm.environment.get(\"team_name\"));",
+									"pm.test(\"Team has assigned to a coach\", response.coach != null && response.coach == pm.environment.get(\"coachId\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{team_name}}\",\n    \"coach\": {{coachId1}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/teams/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"teams",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"playerId\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"player_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"player\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `player_${randomInt}`;",
+									"const password = `player_password${randomInt}`;",
+									"pm.environment.set(\"player_username\", username);",
+									"pm.environment.set(\"player_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{player_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"player\",\n    \"password\": \"{{player_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Players to Team1",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"players\": [\n        {\n            \"user\": {{playerId}},\n            \"height\": 191.0,\n            \"average_score\": 57.00,\n            \"games_played\": 10\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/teams/{{teamId1}}/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"teams",
+								"{{teamId1}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User - Coach for Team2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"coachId2\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"coach_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"coach\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `coach_${randomInt}`;",
+									"const password = `coach_password${randomInt}`;",
+									"pm.environment.set(\"coach_username\", username);",
+									"pm.environment.set(\"coach_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{coach_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"coach\",\n    \"password\": \"{{coach_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Team2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const teamName = `Team_${randomInt}`;",
+									"pm.environment.set(\"team_name\", teamName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"teamId2\", response.id)",
+									"",
+									"pm.test(\"Team created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"Team id created\", response.id != null);",
+									"pm.test(\"Team name created\", response.name != null && response.name == pm.environment.get(\"team_name\"));",
+									"pm.test(\"Team has assigned to a coach\", response.coach != null && response.coach == pm.environment.get(\"coachId\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{team_name}}\",\n    \"coach\": {{coachId2}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/teams/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"teams",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User - Player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response =  pm.response.json();",
+									"",
+									"pm.environment.set(\"playerId\", response.id)",
+									"",
+									"pm.test(\"User created successfully\", response.status == 201);",
+									"",
+									"pm.test(\"User id created\", response.id != null);",
+									"pm.test(\"User username created\", response.username != null && response.username == pm.environment.get(\"player_username\"));",
+									"pm.test(\"User user_type is created\", response.user_type != null && response.user_type == \"player\");",
+									"pm.test(\"User email is created\", response.email != null);",
+									"pm.test(\"User login_count is created\", response.login_count != null);",
+									"pm.test(\"User total_time_spent is created\", response.total_time_spent != null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomInt = Math.floor(Math.random() * 10000);",
+									"const username = `player_${randomInt}`;",
+									"const password = `player_password${randomInt}`;",
+									"pm.environment.set(\"player_username\", username);",
+									"pm.environment.set(\"player_password\", password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{player_username}}\",\n    \"email\": \"slopez@example.com\",\n    \"user_type\": \"player\",\n    \"password\": \"{{player_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Players to Team2",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"players\": [\n        {\n            \"user\": {{playerId}},\n            \"height\": 191.0,\n            \"average_score\": 57.00,\n            \"games_played\": 10\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/teams/{{teamId2}}/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"teams",
+								"{{teamId2}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Games",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const isoDateStr = eval(pm.environment.get(\"getISODateTimeString\"))(new Date())",
+									"",
+									"const currentDate = isoDateStr.split('T')[0]",
+									"pm.environment.set(\"currentDate\", currentDate);",
+									"console.log(currentDate)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \n        \"team1\": {{teamId1}},\n        \"team2\":{{teamId2}},\n        \"team1_score\": 76,\n        \"team2_score\": 71,\n        \"date\": \"{{currentDate}}\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
