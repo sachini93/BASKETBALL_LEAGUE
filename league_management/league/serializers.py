@@ -38,7 +38,14 @@ class PlayerSerializer(serializers.ModelSerializer):
         if 'user' in validated_data:
             validated_data.pop('user')
 
-        instance.team = validated_data.get('team', instance.team)
+        # handle null assigment for team in given data
+        if 'team' in validated_data:
+            team = validated_data.pop('team')
+            if team is None:
+                instance.team = None
+            else:
+                instance.team = team
+
         instance.height = validated_data.get('height', instance.height)
         instance.average_score = validated_data.get('average_score', instance.average_score)
         instance.games_played = validated_data.get('games_played', instance.games_played)

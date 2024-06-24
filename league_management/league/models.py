@@ -44,7 +44,7 @@ class Team(models.Model):
 
 class Player(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players', null=True, blank=True)
     height = models.FloatField()
     average_score = models.FloatField(default=0)
     games_played = models.IntegerField(default=0)
