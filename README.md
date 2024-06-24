@@ -51,23 +51,23 @@ Follow these steps to set up the project on your local machine.
   ### Teams
   - GET /api/teams/: List all teams.
   - POST /api/teams/: Create a new team.
-  - GET /api/teams/<id>/: Retrieve a team by ID.
-  - PUT /api/teams/<id>/: Update a team by ID.
-  - DELETE /api/teams/<id>/: Delete a team by ID.
+  - GET /api/teams/{id}/: Retrieve a team by ID.
+  - PUT /api/teams/{id}/: Update a team by ID.
+  - DELETE /api/teams/{id}/: Delete a team by ID.
  
   ### Players
   - GET /api/players/: List all players.
   - POST /api/players/: Create a new player.
-  - GET /api/players/<id>/: Retrieve a player by ID.
-  - PUT /api/players/<id>/: Update a player by ID.
-  - DELETE /api/players/<id>/: Delete a player by ID.
+  - GET /api/players/{id}/: Retrieve a player by ID.
+  - PUT /api/players/{id}/: Update a player by ID.
+  - DELETE /api/players/{id}/: Delete a player by ID.
  
   ### Games
   - GET /api/games/: List all games.
   - POST /api/games/: Create a new game.
-  - GET /api/games/<id>/: Retrieve a game by ID.
-  - PUT /api/games/<id>/: Update a game by ID.
-  - DELETE /api/games/<id>/: Delete a game by ID.
+  - GET /api/games/{id}/: Retrieve a game by ID.
+  - PUT /api/games/{id}/: Update a game by ID.
+  - DELETE /api/games/{id}/: Delete a game by ID.
  
 ## Management Commands
 ### Generate Fake Data
